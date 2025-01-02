@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/mpabasara11/Task_Manager_API#readme",
   "dependencies": {
-    "express": "^4.21.2"
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.3"
   }
 }
