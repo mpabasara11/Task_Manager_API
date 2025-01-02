@@ -1,0 +1,22 @@
+{
+  "name": "task_manager_api",
+  "version": "1.0.0",
+  "description": "API for task assignment and management",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mpabasara11/Task_Manager_API.git"
+  },
+  "author": "M.L.M.Pabasara",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mpabasara11/Task_Manager_API/issues"
+  },
+  "homepage": "https://github.com/mpabasara11/Task_Manager_API#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
