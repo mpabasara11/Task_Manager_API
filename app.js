@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 //importing routes
 const admin_routes = require('./routes/admin_routes.js')
+const authentication_routes = require('./routes/authentication_routes.js')
 
 
 
@@ -20,6 +21,10 @@ app.use((req, res, next) => {
     next();
   });
 
+
+
+//connect auth routes 
+app.use('/auth',authentication_routes);
 
 
 //connect admin routes 

@@ -147,4 +147,26 @@ router.get('/get_all_users',(req,res)=>{
     });
 })
 
+
+
+//get user by username
+router.get('/get_user',(req,res)=>
+    {
+        const userName = req.body.userName
+
+        User.findOne({userName:userName})
+        .then(user => {
+            if(user)
+            {
+                console.log('User found');
+                res.status(200).json(user);
+            }
+            else
+            {
+                console.log('User not found');
+                res.status(404).json({error:'User not found'});
+            }
+        })
+    })
+
 module.exports = router;
