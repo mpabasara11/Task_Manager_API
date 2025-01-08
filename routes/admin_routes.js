@@ -5,6 +5,20 @@ const User = require('../db_schema_models/user_model.js');
 const bcrypt = require('bcrypt');
 
 
+//middleware for checking request object contain a userRole as admin
+router.use((req,res,next) => {
+    if(req.userRole === 'admin')
+    {
+        next();
+    }
+    else
+    {
+        res.status(403).json({error:'Forbidden'});
+    }
+}
+)
+
+
 
 
 //create a new user

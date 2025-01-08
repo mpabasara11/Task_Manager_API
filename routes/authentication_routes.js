@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = "secret"
 
 
+
 router.post('/signin',(req,res)=>
     {
         const userName = req.body.userName
@@ -26,7 +27,8 @@ router.post('/signin',(req,res)=>
                        // res.status(200).json({message:'User signed in'});
 
                           //generate a token
-                            const token = jwt.sign({userName    : user.userName,
+                            const token = jwt.sign({
+                                userName    : user.userName,
                                 userRole    : user.userRole,
                                 firstName   : user.firstName,
                                 lastName    : user.lastName,
@@ -34,7 +36,7 @@ router.post('/signin',(req,res)=>
                                 nic         : user.nic
                             },jwtSecret,{expiresIn:'1h'});
 
-                            res.cookie('token',token,
+                            res.cookie('state_token',token,
                                 {
                                     httpOnly: true,       // Prevent JavaScript access to the cookie
                                     secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
@@ -58,17 +60,15 @@ router.post('/signin',(req,res)=>
     })
 
 
-
-
-
-
-
-
-
-
-
-
-
+router.post('/signout',(req,res)=>
+    {
+        try{
+        res.clearCookie('state_token',{httpOnly: true,secure: process.env.NODE_ENV === 'production'});
+        res.status(200).json({ message: 'User signed out' });
+    } catch (err) {
+        res.status(500).json({ message: 'An error occurred while signing out' });
+    }
+    })
 
 
 
