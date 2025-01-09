@@ -72,4 +72,55 @@ router.post('/signout',(req,res)=>
 
 
 
+router.post('/password_reset',(req,res)=>
+    {
+        const userName = req.body.userName
+        const previousPassword = req.body.previousPassword
+        const password = req.body.password
+
+        //check if username exists
+        User.findOne({userName:userName})
+        .then(user => 
+            {
+                if(user)
+                {
+                    //validate the previous password with password on database
+                    bcrypt.compare(previousPassword, user.passwordHashCode, function(err, result) {
+                        if(result)
+                        {
+                            //if password is same as the previous password then proceed to reset the password
+                            const saltRounds = 10;
+                            const passwordHashCode = bcrypt.hashSync(password, saltRounds);
+                            user.passwordHashCode = passwordHashCode;
+                            user.save()
+                            .then(() => {
+                                console.log('Password updated');
+                                res.status(200).json({message:'Password updated'});
+                            })
+                            .catch(error => {
+                                console.error('Error while updating the password:',error);
+                                res.status(500).json({error:'Internal server error'});
+                            });
+
+                        }else
+                        {
+                            console.log('Incorrect previous password');
+                            res.status(401).json({error:'Incorrect previous password'});
+                        }
+
+
+                        }
+                        )
+               
+                }
+                else
+                {
+                    console.log('User not found');
+                    res.status(404).json({error:'User not found'});
+                }
+            })
+    })
+
+
+
 module.exports = router;

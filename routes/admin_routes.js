@@ -19,8 +19,6 @@ router.use((req,res,next) => {
 )
 
 
-
-
 //create a new user
 router.post('/create_user', (req, res) => {
    
@@ -48,25 +46,41 @@ User.findOne({userName:userName})
     }
     else
     {
-        const newUser = new User({
-            userName:userName,
-            passwordHashCode:passwordHashCode,
-            userRole:userRole,
-            firstName:firstName,
-            lastName:lastName,
-            email:email,
-            nic:nic
-        });
+   
+        //check user role is valid.user roles are admin,manager,employee
+        if(userRole === 'admin' || userRole === 'manager' || userRole === 'employee')
+            {
 
-        newUser.save()
-        .then(() => {
-            console.log('User created');
-            res.status(201).json({message:'User created'});
-        })
-        .catch(error => {
-            console.error('Error while saving the user:',error);
-            res.status(500).json({error:'Internal server error'});
-        });
+                const newUser = new User({
+                    userName:userName,
+                    passwordHashCode:passwordHashCode,
+                    userRole:userRole,
+                    firstName:firstName,
+                    lastName:lastName,
+                    email:email,
+                    nic:nic
+                });
+
+                newUser.save()
+                .then(() => {
+                    console.log('User created');
+                    res.status(201).json({message:'User created'});
+                })
+                .catch(error => {
+                    console.error('Error while saving the user:',error);
+                    res.status(500).json({error:'Internal server error'});
+                });
+
+
+
+            }
+            else
+            {
+
+                console.log('Invalid user role');
+                res.status(400).json({error:'Invalid user role'});
+            }
+
     }
 })
 })
@@ -92,22 +106,38 @@ User.findOne({userName:userName})
 .then(user => {
     if(user)
     {
-        user.passwordHashCode = passwordHashCode;
-        user.userRole = userRole;
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.email = email;
-        user.nic = nic;
+      ///
 
-        user.save()
-        .then(() => {
-            console.log('User updated');
-            res.status(200).json({message:'User updated'});
-        })
-        .catch(error => {
-            console.error('Error while updating the user:',error);
-            res.status(500).json({error:'Internal server error'});
-        });
+      //check user role is valid.user roles are admin,manager,employee
+      if(userRole === 'admin' || userRole === 'manager' || userRole === 'employee')
+        {
+            user.passwordHashCode = passwordHashCode;
+            user.userRole = userRole;
+            user.firstName = firstName;
+            user.lastName = lastName;
+            user.email = email;
+            user.nic = nic;
+    
+            user.save()
+            .then(() => {
+                console.log('User updated');
+                res.status(200).json({message:'User updated'});
+            })
+            .catch(error => {
+                console.error('Error while updating the user:',error);
+                res.status(500).json({error:'Internal server error'});
+            });
+        }
+        else
+        {
+            console.log('Invalid user role');
+            res.status(400).json({error:'Invalid user role'});
+        }
+
+
+
+      ///
+
     }
     else
     {

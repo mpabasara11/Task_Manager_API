@@ -11,6 +11,8 @@ const jwtSecret = "secret"
 //importing routes
 const admin_routes = require('./routes/admin_routes.js')
 const authentication_routes = require('./routes/authentication_routes.js')
+const employee_routes = require('./routes/employee_routes.js')
+const manager_routes = require('./routes/manager_routes.js')
 
 
 
@@ -81,6 +83,11 @@ app.use((req, res, next) => {
 //connect admin routes 
 app.use('/admin',admin_routes);
 
+//connect admin routes 
+app.use('/employee',employee_routes);
+
+//connect admin routes 
+app.use('/manager',manager_routes);
 
 
 
