@@ -6,8 +6,8 @@ const taskSchema = new mongoose.Schema({
     taskDescription: String,
     taskDeadline: Date,
     taskStatus: String,
-    taskAssignedTo: String,
-    taskAssignedBy: String
+    taskCreatedBy: String,
+    taskPriority: String,
     // other fields if needed...
     });
 

@@ -3,6 +3,7 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const User = require('../db_schema_models/user_model.js');
 const Task = require('../db_schema_models/task_model.js');
+const Task_User_Log = require('../db_schema_models/task_user_log_model.js');
 const bcrypt = require('bcrypt');
 
 
@@ -27,53 +28,57 @@ router.post('/create_task', (req, res) => {
     const taskDescription = req.body.taskDescription
     const taskDeadline = req.body.taskDeadline
     const taskStatus = req.body.taskStatus
-    const taskAssignedTo = req.body.taskAssignedTo
-    const taskAssignedBy = req.userName
+    const taskCreatedBy = req.body.taskCreatedBy
+    const taskPriority = req.body.taskPriority
 
-   //check if task already exists with taskName
-   Task.findOne({taskName:taskName})
-    .then(task => {
-         if(task)
-         {
-              console.log('Task already exists');
-              res.status(409).json({error:'Task already exists'});
-         }
-         else
-         {
+  
            
     //check if task assignee exists
-    User.findOne({userName:taskAssignedTo})
+    User.findOne({userName:taskCreatedBy})
     .then(user => 
         {
             if(user)
                 {
-                    const newTask = new Task({
-                        taskName:taskName,
-                        taskDescription:taskDescription,
-                        taskDeadline:taskDeadline,
-                        taskStatus:taskStatus,
-                        taskAssignedTo:taskAssignedTo,
-                        taskAssignedBy:taskAssignedBy
-                    })
-                
-                    newTask.save()
-                    .then(() => {
-                        console.log('Task created');
-                        res.status(200).json({message:'Task created'});
-                    })
-                    .catch((error) => {
-                        console.log('Error creating task');
-                        res.status(500).json({error:'Error creating task'});
-                    })
+                    //check task name is unique
+                    Task.findOne({taskName:taskName})
+                    .then(task => 
+                        {
+                            if(task)
+                                {
+                                    console.log('Task name already exists');
+                                    res.status(409).json({error:'Task name already exists'});
+                                }
+                                else
+                                {
+                                    const newTask = new Task({
+                                        taskName:taskName,
+                                        taskDescription:taskDescription,
+                                        taskDeadline:taskDeadline,
+                                        taskStatus:taskStatus,
+                                        taskCreatedBy:taskCreatedBy,
+                                        taskPriority:taskPriority
+                                    })
+                                
+                                    newTask.save()
+                                    .then(() => {
+                                        console.log('Task created');
+                                        res.status(200).json({message:'Task created'});
+                                    })
+                                    .catch((error) => {
+                                        console.log('Error creating task');
+                                        res.status(500).json({error:'Error creating task'});
+                                    })
+                                }
+                        })
                 }
                 else
                 {
-                    console.log('User assigned to the task not found');
-                    res.status(404).json({error:'User assigned to the task not found'});
+                    console.log('User created the task does not exist');
+                    res.status(404).json({error:'User created the task does not exist'});
                 }
         })
-         }
-    })
+         
+    
 
 
 
@@ -86,8 +91,8 @@ router.put('/update_task', (req, res) => {
     const taskDescription = req.body.taskDescription
     const taskDeadline = req.body.taskDeadline
     const taskStatus = req.body.taskStatus
-    const taskAssignedTo = req.body.taskAssignedTo
-    const taskAssignedBy = req.userName
+    const taskCreatedBy = req.body.taskCreatedBy
+    const taskPriority = req.body.taskPriority
 
     Task.findOne({taskName:taskName})
     .then(task => 
@@ -95,12 +100,12 @@ router.put('/update_task', (req, res) => {
             if(task)
                 {
                     //check if task assignee exists
-                    User.findOne({userName:taskAssignedTo})
+                    User.findOne({userName:taskCreatedBy})
                     .then(user => 
                         {
                             if(user)
                                 {
-                                    Task.updateOne({taskDescription:taskDescription, taskDeadline:taskDeadline, taskStatus:taskStatus, taskAssignedTo:taskAssignedTo, taskAssignedBy:taskAssignedBy})
+                                    Task.updateOne({taskDescription:taskDescription, taskDeadline:taskDeadline, taskStatus:taskStatus, taskCreatedBy:taskCreatedBy, taskPriority:taskPriority})
                                     .then(() => {
                                         console.log('Task updated');
                                         res.status(200).json({message:'Task updated'});
@@ -112,8 +117,8 @@ router.put('/update_task', (req, res) => {
                                 }
                                 else
                                 {
-                                    console.log('User assigned to the task not found');
-                                    res.status(404).json({error:'User assigned to the task not found'});
+                                    console.log('User created the task does not exist');
+                                    res.status(404).json({error:'User created the task does not exist'});
                                 }
                         })
                 }
@@ -187,22 +192,37 @@ router.delete('/delete_task', (req, res) => {
     
 
 
-//assign task
+//assign users to task
+router.post('/assign_user_to_task', (req, res) => {
+    const taskName = req.body.taskName
+    const userName = req.body.userName
 
+    //check if task exists
+    Task.findOne({taskName:taskName})
+    .then(task => {
+        if(task)
+        {
+            //check if user exists
+            User.findOne({userName:userName})
+            .then(user => {
+                if(user)
+                {
+                    //check if user is already assigned to task
+                }
+                else
+                {
+                    console.log('User does not exist');
+                    res.status(404).json({error:'User does not exist'});
+                }
+        })}
+        else
+        {
+            console.log('Task not found');
+            res.status(404).json({error:'Task not found'})
+        }
+    })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+})
 
 
 
