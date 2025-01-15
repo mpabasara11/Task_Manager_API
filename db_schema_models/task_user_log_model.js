@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 // task schema
 const taskLogSchema = new mongoose.Schema({
     id: String,
-    taskId: String,
-    userId: Date
+    taskName: String,
+    userName: String,
     // other fields if needed...
     });
 

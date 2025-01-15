@@ -190,14 +190,23 @@ router.delete('/delete_task', (req, res) => {
     })
 })
     
-
-
 //assign users to task
 router.post('/assign_user_to_task', (req, res) => {
+    const id = req.body.id
     const taskName = req.body.taskName
     const userName = req.body.userName
 
-    //check if task exists
+//check if log entry exists
+Task_User_Log.findOne({id:id})
+.then(log => {
+    if(log)
+    {
+        console.log('Log entry with that id already exists');
+        res.status(409).json({error:'Log entry with that id already exists'});
+    }
+    else
+    {
+          //check if task exists
     Task.findOne({taskName:taskName})
     .then(task => {
         if(task)
@@ -207,7 +216,21 @@ router.post('/assign_user_to_task', (req, res) => {
             .then(user => {
                 if(user)
                 {
-                    //check if user is already assigned to task
+                    //create a new task user log
+                    const newTaskUserLog = new Task_User_Log({
+                        id:id,
+                        taskName:taskName,
+                        userName:userName
+                    })
+                    newTaskUserLog.save()
+                    .then(() => {
+                        console.log('User assigned to task');
+                        res.status(200).json({message:'User assigned to task'});
+                    })
+                    .catch((error) => {
+                        console.log('Error assigning user to task');
+                        res.status(500).json({error:'Error assigning user to task'});
+                    })
                 }
                 else
                 {
@@ -222,8 +245,61 @@ router.post('/assign_user_to_task', (req, res) => {
         }
     })
 
+
+    }
 })
 
+})
+
+
+//delete user from task
+router.delete('/delete_user_from_task', (req, res) => {
+    const id = req.body.id
+
+    //check if log entry exists
+    Task_User_Log.findOne({id:id})
+    .then(log => {
+        if(log)
+        {
+            log.deleteOne()
+            .then(() => {
+                console.log('User deleted from task');
+                res.status(200).json({message:'User deleted from task'});
+            })
+            .catch((error) => {
+                console.log('Error deleting user from task');
+                res.status(500).json({error:'Error deleting user from task'});
+            })
+        }
+        else
+        {
+            console.log('Log entry not found');
+            res.status(404).json({error:'Log entry not found'});
+        }
+    })
+})
+
+
+//view users assigned to task
+router.get('/view_users_assigned_to_task', (req, res) => {
+    const taskName = req.body.taskName
+    
+    //check if task exists
+    Task_User_Log.find({taskName:taskName})
+    .then(logs => {
+        if(logs)
+        {
+            console.log('Users found');
+            res.status(200).json(logs);
+        }
+        else
+        {
+            console.log('Users not found');
+            res.status(404).json({error:'Users not found'});
+        }
+    })
+
+})
 
 
 module.exports = router;
