@@ -30,6 +30,7 @@ router.post('/create_task', (req, res) => {
     const taskStatus = req.body.taskStatus
     const taskCreatedBy = req.body.taskCreatedBy
     const taskPriority = req.body.taskPriority
+    const taskTotalStoryPoints = req.body.taskTotalStoryPoints
 
   
            
@@ -56,7 +57,8 @@ router.post('/create_task', (req, res) => {
                                         taskDeadline:taskDeadline,
                                         taskStatus:taskStatus,
                                         taskCreatedBy:taskCreatedBy,
-                                        taskPriority:taskPriority
+                                        taskPriority:taskPriority,
+                                        taskTotalStoryPoints:taskTotalStoryPoints
                                     })
                                 
                                     newTask.save()
@@ -93,6 +95,7 @@ router.put('/update_task', (req, res) => {
     const taskStatus = req.body.taskStatus
     const taskCreatedBy = req.body.taskCreatedBy
     const taskPriority = req.body.taskPriority
+  
 
     Task.findOne({taskName:taskName})
     .then(task => 
@@ -105,7 +108,17 @@ router.put('/update_task', (req, res) => {
                         {
                             if(user)
                                 {
-                                    Task.updateOne({taskDescription:taskDescription, taskDeadline:taskDeadline, taskStatus:taskStatus, taskCreatedBy:taskCreatedBy, taskPriority:taskPriority})
+
+
+                                    task.taskDescription = taskDescription;
+                                    task.taskDeadline = taskDeadline;
+                                    task.taskStatus = taskStatus;
+                                    task.taskCreatedBy = taskCreatedBy;
+                                    task.taskPriority = taskPriority;
+                              
+
+                                    task.save()
+
                                     .then(() => {
                                         console.log('Task updated');
                                         res.status(200).json({message:'Task updated'});
@@ -131,6 +144,34 @@ router.put('/update_task', (req, res) => {
 
 })
 
+
+//delete task
+router.delete('/delete_task', (req, res) => {
+    const taskName = req.body.taskName
+
+    //check if task exists
+    Task.findOne({taskName:taskName})
+    .then(task => {
+        if(task)
+        {
+            task.deleteOne()
+            .then(() => {
+                console.log('Task deleted');
+                res.status(200).json({message:'Task deleted'});
+            })
+            .catch((error) => {
+                console.log('Error deleting task');
+                res.status(500).json({error:'Error deleting task'});
+            })
+        }
+        else
+        {
+            console.log('Task not found');
+            res.status(404).json({error:'Task not found'});
+        }
+    })
+})
+    
 //view tasks
 router.get('/view_tasks', (req, res) => {
     Task.find()
@@ -163,38 +204,16 @@ router.get('/view_task_by_name', (req, res) => {
 })
 
 
-//delete task
-router.delete('/delete_task', (req, res) => {
-    const taskName = req.body.taskName
 
-    //check if task exists
-    Task.findOne({taskName:taskName})
-    .then(task => {
-        if(task)
-        {
-            task.deleteOne()
-            .then(() => {
-                console.log('Task deleted');
-                res.status(200).json({message:'Task deleted'});
-            })
-            .catch((error) => {
-                console.log('Error deleting task');
-                res.status(500).json({error:'Error deleting task'});
-            })
-        }
-        else
-        {
-            console.log('Task not found');
-            res.status(404).json({error:'Task not found'});
-        }
-    })
-})
-    
+
+
 //assign users to task
 router.post('/assign_user_to_task', (req, res) => {
     const id = req.body.id
     const taskName = req.body.taskName
     const userName = req.body.userName
+    const progress = req.body.progress
+    const assignedStoryPoints = Number(req.body.assignedStoryPoints)
 
 //check if log entry exists
 Task_User_Log.findOne({id:id})
@@ -216,21 +235,55 @@ Task_User_Log.findOne({id:id})
             .then(user => {
                 if(user)
                 {
-                    //create a new task user log
-                    const newTaskUserLog = new Task_User_Log({
-                        id:id,
-                        taskName:taskName,
-                        userName:userName
-                    })
-                    newTaskUserLog.save()
-                    .then(() => {
-                        console.log('User assigned to task');
-                        res.status(200).json({message:'User assigned to task'});
-                    })
-                    .catch((error) => {
-                        console.log('Error assigning user to task');
-                        res.status(500).json({error:'Error assigning user to task'});
-                    })
+               
+                    //check the task story points 
+                    if(task.taskTotalStoryPoints < assignedStoryPoints)
+                    {
+                        console.log('Assigned story points exceeds total story points ');
+                        res.status(400).json({error:'Assigned story points exceeds total story points '});
+                    }
+                    else
+                    {
+                       //check other employee assigned story points to the task
+                          Task_User_Log.find({taskName:taskName})
+                            .then(logs => {
+
+                        
+                                let assignedStoryPointsOfAllUsers = 0;
+                                logs.forEach(log => {
+                                    assignedStoryPointsOfAllUsers += log.assignedStoryPoints;
+                                })
+    
+                         
+                                
+                                if((assignedStoryPointsOfAllUsers + assignedStoryPoints) > task.taskTotalStoryPoints)
+                                {
+                                    console.log('Assigned story points exceeds total story points');
+                                    res.status(400).json({error:'Assigned story points exceeds total story points '});
+                                }
+                                else
+                                {
+                                    const newLog = new Task_User_Log({
+                                        id:id,
+                                        taskName:taskName,
+                                        userName:userName,
+                                        progress:progress,
+                                        assignedStoryPoints:assignedStoryPoints
+                                    })
+                                    newLog.save()
+                                    .then(() => {
+                                        console.log('User assigned to task');
+                                        res.status(200).json({message:'User assigned to task'});
+                                    })
+                                    .catch((error) => {
+                                        console.log('Error assigning user to task');
+                                        res.status(500).json({error:'Error assigning user to task'});
+                                    })
+                                }
+                            })
+                    }
+
+
                 }
                 else
                 {
@@ -249,6 +302,92 @@ Task_User_Log.findOne({id:id})
     }
 })
 
+})
+
+
+//update user assigned to task
+router.put('/update_user_assigned_to_task', (req, res) => {
+    const id = req.body.id
+    const taskName = req.body.taskName
+    const userName = req.body.userName
+    const progress = req.body.progress
+    const assignedStoryPoints = Number(req.body.assignedStoryPoints)
+
+    //check if log entry exists
+    Task_User_Log.findOne({id:id})
+    .then(log => {
+        if(log)
+        {
+            //check if task exists
+            Task.findOne({taskName:taskName})
+            .then(task => {
+                if(task)
+                {
+                    //check if user exists
+                    User.findOne({userName:userName})
+                    .then(user => {
+                        if(user)
+                        {
+                            //check the task story points 
+                            if(task.taskTotalStoryPoints < assignedStoryPoints)
+                            {
+                                console.log('Assigned story points exceeds total story points ');
+                                res.status(400).json({error:'Assigned story points exceeds total story points '});
+                            }
+                            else
+                            {
+                                //check other employee assigned story points to the task
+                                Task_User_Log.find({taskName:taskName})
+                                .then(logs => {
+                                    let assignedStoryPointsOfAllUsers = 0;
+                                    logs.forEach(log => {
+                                        assignedStoryPointsOfAllUsers += log.assignedStoryPoints;
+                                    })
+                                    assignedStoryPointsOfAllUsers -= log.assignedStoryPoints;
+                                    if((assignedStoryPointsOfAllUsers + assignedStoryPoints) > task.taskTotalStoryPoints)
+                                    {
+                                        console.log('Assigned story points exceeds total story points');
+                                        res.status(400).json({error:'Assigned story points exceeds total story points '});
+                                    }
+                                    else
+                                    {
+
+                                        log.progress = progress;
+                                        log.assignedStoryPoints = assignedStoryPoints;
+                                        log.save()
+                                        .then(() => {
+                                            console.log('User assigned to task');
+                                            res.status(200).json({message:'User assigned to task'});
+                                        })
+                                        .catch((error) => {
+                                            console.log('Error assigning user to task');
+                                            res.status(500).json({error:'Error assigning user to task'});
+                                        })
+                                    }
+                                })
+                            }
+                        }
+                        else
+                        {
+                            console.log('User does not exist');
+                            res.status(404).json({error:'User does not exist'});
+                        }
+                    })
+                }
+                else
+                {
+                    console.log('Task not found');
+                    res.status(404).json({error:'Task not found'})
+                }
+            })
+        }
+        else
+        {
+            console.log('Log entry not found');
+            res.status(404).json({error:'Log entry not found'});
+        }
+    }
+    )
 })
 
 
@@ -280,7 +419,7 @@ router.delete('/delete_user_from_task', (req, res) => {
 })
 
 
-//view users assigned to task
+//view users that assigned to task
 router.get('/view_users_assigned_to_task', (req, res) => {
     const taskName = req.body.taskName
     

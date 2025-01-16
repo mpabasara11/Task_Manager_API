@@ -8,6 +8,7 @@ const taskSchema = new mongoose.Schema({
     taskStatus: String,
     taskCreatedBy: String,
     taskPriority: String,
+    taskTotalStoryPoints: Number
     // other fields if needed...
     });
 
