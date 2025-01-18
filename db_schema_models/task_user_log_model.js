@@ -5,6 +5,7 @@ const taskLogSchema = new mongoose.Schema({
     id: String,
     taskName: String,
     userName: String,
+    toDo: String,
     progress: Number,
     assignedStoryPoints: Number
     // other fields if needed...

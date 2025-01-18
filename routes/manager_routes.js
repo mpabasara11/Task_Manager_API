@@ -212,6 +212,7 @@ router.post('/assign_user_to_task', (req, res) => {
     const id = req.body.id
     const taskName = req.body.taskName
     const userName = req.body.userName
+    const toDo = req.body.toDo
     const progress = req.body.progress
     const assignedStoryPoints = Number(req.body.assignedStoryPoints)
 
@@ -235,55 +236,83 @@ Task_User_Log.findOne({id:id})
             .then(user => {
                 if(user)
                 {
-               
-                    //check the task story points 
-                    if(task.taskTotalStoryPoints < assignedStoryPoints)
+
+                    //check user role is employee
+                    if(user.userRole === 'employee')
+                        {
+   //check the task story points 
+   if(task.taskTotalStoryPoints < assignedStoryPoints)
+    {
+        console.log('Assigned story points exceeds total story points ');
+        res.status(400).json({error:'Assigned story points exceeds total story points '});
+    }
+    else
+    {
+     
+       //check user assigned to the task already
+          Task_User_Log.find({taskName:taskName,userName:userName})
+            .then(task_logs => 
+                {
+                    if(task_logs.length > 0)
                     {
-                        console.log('Assigned story points exceeds total story points ');
-                        res.status(400).json({error:'Assigned story points exceeds total story points '});
+                        console.log('User already assigned to the task');
+                        res.status(409).json({error:'User already assigned to the task'});
                     }
                     else
                     {
-                       //check other employee assigned story points to the task
-                          Task_User_Log.find({taskName:taskName})
-                            .then(logs => {
+                      
+                 //check other employee assigned story points to the task
+          Task_User_Log.find({taskName:taskName})
+          .then(logs => {
 
-                        
-                                let assignedStoryPointsOfAllUsers = 0;
-                                logs.forEach(log => {
-                                    assignedStoryPointsOfAllUsers += log.assignedStoryPoints;
-                                })
-    
-                         
-                                
-                                if((assignedStoryPointsOfAllUsers + assignedStoryPoints) > task.taskTotalStoryPoints)
-                                {
-                                    console.log('Assigned story points exceeds total story points');
-                                    res.status(400).json({error:'Assigned story points exceeds total story points '});
-                                }
-                                else
-                                {
-                                    const newLog = new Task_User_Log({
-                                        id:id,
-                                        taskName:taskName,
-                                        userName:userName,
-                                        progress:progress,
-                                        assignedStoryPoints:assignedStoryPoints
-                                    })
-                                    newLog.save()
-                                    .then(() => {
-                                        console.log('User assigned to task');
-                                        res.status(200).json({message:'User assigned to task'});
-                                    })
-                                    .catch((error) => {
-                                        console.log('Error assigning user to task');
-                                        res.status(500).json({error:'Error assigning user to task'});
-                                    })
-                                }
-                            })
+      
+              let assignedStoryPointsOfAllUsers = 0;
+              logs.forEach(log => {
+                  assignedStoryPointsOfAllUsers += log.assignedStoryPoints;
+              })
+
+       
+              
+              if((assignedStoryPointsOfAllUsers + assignedStoryPoints) > task.taskTotalStoryPoints)
+              {
+                  console.log('Assigned story points exceeds total story points');
+                  res.status(400).json({error:'Assigned story points exceeds total story points '});
+              }
+              else
+              {
+                  const newLog = new Task_User_Log({
+                      id:id,
+                      taskName:taskName,
+                      userName:userName,
+                      toDo:toDo,
+                      progress:progress,
+                      assignedStoryPoints:assignedStoryPoints
+                  })
+                  newLog.save()
+                  .then(() => {
+                      console.log('User assigned to task');
+                      res.status(200).json({message:'User assigned to task'});
+                  })
+                  .catch((error) => {
+                      console.log('Error assigning user to task');
+                      res.status(500).json({error:'Error assigning user to task'});
+                  })
+              }
+          })
+                
+                    }})
+
                     }
 
 
+                        }
+                        else
+                        {
+                            console.log('User is not an employee');
+                            res.status(400).json({error:'User is not an employee'});
+                        }
+               
+                 
                 }
                 else
                 {
@@ -305,11 +334,12 @@ Task_User_Log.findOne({id:id})
 })
 
 
-//update user assigned to task
-router.put('/update_user_assigned_to_task', (req, res) => {
+//update task assignee details (progress, assigned story points , specific detail)
+router.put('/update_assignee', (req, res) => {
     const id = req.body.id
     const taskName = req.body.taskName
     const userName = req.body.userName
+    const toDO = req.body.toDo
     const progress = req.body.progress
     const assignedStoryPoints = Number(req.body.assignedStoryPoints)
 
@@ -354,14 +384,15 @@ router.put('/update_user_assigned_to_task', (req, res) => {
 
                                         log.progress = progress;
                                         log.assignedStoryPoints = assignedStoryPoints;
+                                        log.toDo = toDO;
                                         log.save()
                                         .then(() => {
-                                            console.log('User assigned to task');
-                                            res.status(200).json({message:'User assigned to task'});
+                                            console.log('Updated assignee details');
+                                            res.status(200).json({message:'Updated assignee details'});
                                         })
                                         .catch((error) => {
-                                            console.log('Error assigning user to task');
-                                            res.status(500).json({error:'Error assigning user to task'});
+                                            console.log('Error updating assignee details');
+                                            res.status(500).json({error:'Error updating assignee details'});
                                         })
                                     }
                                 })
