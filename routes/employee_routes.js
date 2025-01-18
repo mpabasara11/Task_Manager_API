@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 
 //middleware for checking request object contain a userRole as employee
 router.use((req,res,next) => {
-    if(req.userRole === 'admin')
+    if(req.userRole === 'employee')
     {
         next();
     }
