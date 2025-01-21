@@ -1,0 +1,521 @@
+{
+	"info": {
+		"_postman_id": "a3d46732-9345-4a9a-93aa-85a5f2008a95",
+		"name": "Task Manager API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "14563490"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Sign in",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\":\"nimal11\",\r\n    \"password\":\"z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/auth/signin"
+					},
+					"response": []
+				},
+				{
+					"name": "Sign out",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/auth/signout"
+					},
+					"response": []
+				},
+				{
+					"name": "Password reset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\":\"mpabasara11\",\r\n    \"previousPassword\" : \"zxasd\",\r\n    \"password\":\"z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/auth/password_reset"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication and autherization end points"
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"nimal11\",\r\n    \"password\": \"z\",\r\n    \"userRole\": \"employee\",\r\n    \"firstName\": \"nimal\",\r\n    \"lastName\": \"liyanage\",\r\n    \"email\": \"nimal11@gmail.com\",\r\n    \"nic\": \"962722222v\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/admin/create_user"
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"mpabasara11\",\r\n    \"password\": \"z\",\r\n    \"userRole\": \"admin\",\r\n    \"firstName\": \"malindu\",\r\n    \"lastName\": \"pabasaray\",\r\n    \"email\": \"mpabasara11@gmail.com\",\r\n    \"nic\": \"992722231v\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/admin/update_user"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"mpabasara11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/admin/delete_user"
+					},
+					"response": []
+				},
+				{
+					"name": "View all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/admin/get_all_users"
+					},
+					"response": []
+				},
+				{
+					"name": "View specific user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"userName\" : \"mpabasara11\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/admin/get_user"
+					},
+					"response": []
+				}
+			],
+			"description": "Admin specific end points"
+		},
+		{
+			"name": "Manager",
+			"item": [
+				{
+					"name": "Create task",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\": \"task2\",\r\n    \"taskDescription\": \"a to the d to z\",\r\n    \"taskDeadline\": \"2025-01-20T20:00:00.000\",\r\n    \"taskStatus\": \"not done\",\r\n    \"taskCreatedBy\": \"kamal11\",\r\n    \"taskPriority\":\"High\",\r\n    \"taskTotalStoryPoints\":\"30\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/create_task"
+					},
+					"response": []
+				},
+				{
+					"name": "View tasks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var template = `\r",
+									"<style type=\"text/css\">\r",
+									"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+									"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+									"    .tftable tr {background-color:#ffffff;}\r",
+									"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+									"    .tftable tr:hover {background-color:#e0ffff;}\r",
+									"</style>\r",
+									"\r",
+									"<table class=\"tftable\" border=\"1\">\r",
+									"    <tr>\r",
+									"        <th>ID</th>\r",
+									"        <th>Name</th>\r",
+									"        <th>Description</th>\r",
+									"        <th>Deadline</th>\r",
+									"        <th>Status</th>\r",
+									"        <th>Created By</th>\r",
+									"        <th>Priority</th>\r",
+									"        <th>Total Story Points</th>\r",
+									"    </tr>\r",
+									"    \r",
+									"    {{#each response}}\r",
+									"        <tr>\r",
+									"            <td>{{_id}}</td>\r",
+									"            <td>{{taskName}}</td>\r",
+									"            <td>{{taskDescription}}</td>\r",
+									"            <td>{{taskDeadline}}</td>\r",
+									"            <td>{{taskStatus}}</td>\r",
+									"            <td>{{taskCreatedBy}}</td>\r",
+									"            <td>{{taskPriority}}</td>\r",
+									"            <td>{{taskTotalStoryPoints}}</td>\r",
+									"        </tr>\r",
+									"    {{/each}}\r",
+									"</table>\r",
+									"`;\r",
+									"\r",
+									"function constructVisualizerPayload() {\r",
+									"    return {response: pm.response.json()}\r",
+									"}\r",
+									"\r",
+									"pm.visualizer.set(template, constructVisualizerPayload());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/view_tasks"
+					},
+					"response": []
+				},
+				{
+					"name": "View task by name",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\":\"task1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/view_task_by_name"
+					},
+					"response": []
+				},
+				{
+					"name": "Update task",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\": \"task1\",\r\n    \"taskDescription\": \"a to the c\",\r\n    \"taskDeadline\": \"2025-01-20T20:00:00.000\",\r\n     \"taskStatus\": \"not done\",\r\n    \"taskCreatedBy\": \"mpabasara11\",\r\n    \"taskPriority\":\"High\"\r\n   \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/update_task"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete task",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\":\"task1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/delete_task"
+					},
+					"response": []
+				},
+				{
+					"name": "Assign user to task",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"001\",\r\n    \"taskName\":\"task1\",\r\n    \"userName\":\"nimal11\",\r\n    \"toDo\":\"do that and this\",\r\n    \"progress\":\"0\",\r\n    \"assignedStoryPoints\":\"5\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/assign_user_to_task"
+					},
+					"response": []
+				},
+				{
+					"name": "Update assignee details of task",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"002\",\r\n    \"taskName\":\"task1\",\r\n    \"userName\":\"mpabasara11\",\r\n    \"toDo\":\"do this and this\",\r\n    \"progress\":\"0\",\r\n    \"assignedStoryPoints\":\"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/update_assignee"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete assignee from task",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":\"002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/manager/delete_user_from_task",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"manager",
+								"delete_user_from_task"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View users assigned to task",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\":\"task1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/manager/view_users_assigned_to_task"
+					},
+					"response": []
+				}
+			],
+			"description": "Manager specific end points"
+		},
+		{
+			"name": "Employee",
+			"item": [
+				{
+					"name": "View all tasks",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/employee/view_all_tasks"
+					},
+					"response": []
+				},
+				{
+					"name": "View specific task",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskName\" : \"task1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/employee/view_specific_task"
+					},
+					"response": []
+				},
+				{
+					"name": "View assigned tasks",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\":\"nimal11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/employee/view_assigned_tasks"
+					},
+					"response": []
+				},
+				{
+					"name": "Update task progress",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"logId\":\"001\",\r\n    \"progress\":\"2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/employee/update_task_progress"
+					},
+					"response": []
+				}
+			],
+			"description": "Employee specific end points"
+		}
+	]
+}
